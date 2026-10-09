@@ -23,7 +23,7 @@ st.set_page_config(
 )
 
 if not gemini_key:
-    st.error("⚠️ Geen geldige GEMINI_API_KEY gevonden. Voeg deze toe aan je Streamlit Secrets.")
+    st.error("⚠️ Geen geldige GEMINI_API_KEY gevonden in Streamlit Secrets. Voeg deze toe via Settings -> Secrets.")
     st.stop()
 
 @st.cache_resource
@@ -145,23 +145,22 @@ with tab_briefing:
                 4. ADVISORY BOARD QUESTIONS: 2 scherpe, methodologische discussievragen voor medisch specialisten.
                 """
                 
-               try:
+                try:
                     resp = client.models.generate_content(
                         model="gemini-2.0-flash",
                         contents=briefing_prompt
                     )
                     st.markdown(resp.text)
+                    
+                    docx_file = create_docx(f"Medical Briefing - {query_input}", resp.text)
+                    st.download_button(
+                        label="📥 Download als Word Document (.docx)",
+                        data=docx_file,
+                        file_name="Medical_Briefing.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
                 except Exception as api_err:
                     st.error(f"Foutdetails van Google API: {api_err}")
-                    st.stop()
-                
-                docx_file = create_docx(f"Medical Briefing - {query_input}", resp.text)
-                st.download_button(
-                    label="📥 Download als Word Document (.docx)",
-                    data=docx_file,
-                    file_name="Medical_Briefing.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
 
 # --- TAB 2: ADVISORY BOARDS & MEETINGS ---
 with tab_adboard:
@@ -189,19 +188,21 @@ with tab_adboard:
                 - 📋 Actielijst & Verantwoordelijkheden (duidelijke tabel met: Actiepunt | Eigenaar | Prioriteit)
                 """
                 
-                resp_notes = client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=notes_prompt
-                )
-                
-                st.markdown(resp_notes.text)
-                docx_notes = create_docx(f"Notulen - {meeting_context}", resp_notes.text)
-                st.download_button(
-                    label="📥 Download Notulen (.docx)",
-                    data=docx_notes,
-                    file_name="Meeting_Minutes.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
+                try:
+                    resp_notes = client.models.generate_content(
+                        model="gemini-2.0-flash",
+                        contents=notes_prompt
+                    )
+                    st.markdown(resp_notes.text)
+                    docx_notes = create_docx(f"Notulen - {meeting_context}", resp_notes.text)
+                    st.download_button(
+                        label="📥 Download Notulen (.docx)",
+                        data=docx_notes,
+                        file_name="Meeting_Minutes.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+                except Exception as api_err:
+                    st.error(f"Foutdetails van Google API: {api_err}")
 
 # --- TAB 3: KOL PROFILER ---
 with tab_kol:
@@ -235,16 +236,18 @@ with tab_kol:
                 3. Geschiktheid voor Samenwerking (bijv. als Advisory Board lid, Steering Committee participant, of MSL engagement)
                 """
                 
-                resp_kol = client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=kol_prompt
-                )
-                
-                st.markdown(resp_kol.text)
-                docx_kol = create_docx(f"KOL Profiel - {investigator_name}", resp_kol.text)
-                st.download_button(
-                    label="📥 Download Dossier (.docx)",
-                    data=docx_kol,
-                    file_name=f"KOL_Profiel_{investigator_name.replace(' ', '_')}.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
+                try:
+                    resp_kol = client.models.generate_content(
+                        model="gemini-2.0-flash",
+                        contents=kol_prompt
+                    )
+                    st.markdown(resp_kol.text)
+                    docx_kol = create_docx(f"KOL Profiel - {investigator_name}", resp_kol.text)
+                    st.download_button(
+                        label="📥 Download Dossier (.docx)",
+                        data=docx_kol,
+                        file_name=f"KOL_Profiel_{investigator_name.replace(' ', '_')}.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+                except Exception as api_err:
+                    st.error(f"Foutdetails van Google API: {api_err}")
