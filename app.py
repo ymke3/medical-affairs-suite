@@ -145,12 +145,15 @@ with tab_briefing:
                 4. ADVISORY BOARD QUESTIONS: 2 scherpe, methodologische discussievragen voor medisch specialisten.
                 """
                 
-                resp = client.models.generate_content(
-                    model="gemini-2.0-flash",
-                    contents=briefing_prompt
-                )
-                
-                st.markdown(resp.text)
+               try:
+                    resp = client.models.generate_content(
+                        model="gemini-2.0-flash",
+                        contents=briefing_prompt
+                    )
+                    st.markdown(resp.text)
+                except Exception as api_err:
+                    st.error(f"Foutdetails van Google API: {api_err}")
+                    st.stop()
                 
                 docx_file = create_docx(f"Medical Briefing - {query_input}", resp.text)
                 st.download_button(
