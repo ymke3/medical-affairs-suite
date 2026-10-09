@@ -1,0 +1,1 @@
+# medical-affairs-suite
