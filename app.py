@@ -147,7 +147,7 @@ with tab_briefing:
                 
                 try:
                     resp = client.models.generate_content(
-                        model="gemini-2.0-flash",
+                        model="gemini-3.8-flash",
                         contents=briefing_prompt
                     )
                     st.markdown(resp.text)
@@ -190,7 +190,7 @@ with tab_adboard:
                 
                 try:
                     resp_notes = client.models.generate_content(
-                        model="gemini-2.0-flash",
+                        model="gemini-3.8-flash",
                         contents=notes_prompt
                     )
                     st.markdown(resp_notes.text)
@@ -238,7 +238,7 @@ with tab_kol:
                 
                 try:
                     resp_kol = client.models.generate_content(
-                        model="gemini-2.0-flash",
+                        model="gemini-3.8-flash",
                         contents=kol_prompt
                     )
                     st.markdown(resp_kol.text)
